@@ -6,6 +6,7 @@ import { RowDataPacket } from "mysql2";
 import { AddExpenseButton } from "@/components/expenses/AddExpenseButton";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { SwipeToDeleteExpense } from "@/components/expenses/SwipeToDeleteExpense";
+import { DeleteFolderButton } from "@/components/expenses/DeleteFolderButton";
 
 export default async function FolderDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -56,7 +57,10 @@ export default async function FolderDetailPage(props: { params: Promise<{ id: st
       
       <header className="glass-card p-8 rounded-3xl flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-2">{folder.name}</h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-4xl font-bold tracking-tight text-white">{folder.name}</h1>
+            <DeleteFolderButton folderId={folderId} />
+          </div>
           <p className="text-white/40">
             Created on {new Date(folder.created_at).toLocaleDateString()}
           </p>

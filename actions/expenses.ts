@@ -136,3 +136,27 @@ export async function deleteExpense(type: "folder" | "trip", id: number) {
   }
   return { success: true };
 }
+
+export async function deleteFolder(folderId: number) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const db = await getDb();
+
+  const [rows] = await db.query(
+    "SELECT id FROM folders WHERE id = ? AND user_id = ?",
+    [folderId, session.user.id]
+  ) as [RowDataPacket[], unknown];
+  
+  if (rows.length === 0) {
+    throw new Error("Unauthorized or folder not found");
+  }
+
+  await db.query("DELETE FROM general_expenses WHERE folder_id = ?", [folderId]);
+  await db.query("DELETE FROM folders WHERE id = ?", [folderId]);
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}

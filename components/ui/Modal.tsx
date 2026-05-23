@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,6 +11,12 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Prevent background scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -22,10 +29,10 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center bg-black/50 backdrop-blur-xl">
       {/* Light dismiss overlay */}
       <div className="absolute inset-0" onClick={onClose}></div>
       
@@ -42,6 +49,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         <h2 className="text-2xl font-semibold text-white mb-6 pr-10">{title}</h2>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
